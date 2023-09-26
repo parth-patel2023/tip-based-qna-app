@@ -1,0 +1,6 @@
+venv
+.env
+*.pdf
+.idea
+__pycache__/
+*.py[cod]

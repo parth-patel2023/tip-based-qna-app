@@ -1,0 +1,7 @@
+chromadb==0.3.29
+openai
+cohere
+langchain==0.0.133
+streamlit
+pandas==1.5.3
+python-dotenv
