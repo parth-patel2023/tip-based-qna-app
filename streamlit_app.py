@@ -2,7 +2,7 @@ import streamlit as st
 import os
 import openai
 from langchain.vectorstores import Chroma
-from langchain.text_splitter import CharacterTextSplitter
+from langchain.text_splitter import CharacterTextSplitter, RecursiveCharacterTextSplitter
 from langchain.llms import Cohere
 from langchain.document_loaders import TextLoader
 from langchain.embeddings import CohereEmbeddings
@@ -23,7 +23,9 @@ def process_long_text(long_text):
     loader = TextLoader("input.txt")
     documents = loader.load()
 
-    text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+    # text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=2500, chunk_overlap=0,separators=[" ", ",", "\n"])
+
     texts = text_splitter.split_documents(documents)
 
     embeddings = CohereEmbeddings(
@@ -60,6 +62,8 @@ def question_answering_app():
 
     # Button to convert long text to text file
     if st.button("Learn"):
+        if session_state.qa is not None:
+            session_state.qa = None
         session_state.qa = process_long_text(long_text)
 
     # Process user input when question is provided
@@ -71,8 +75,19 @@ def question_answering_app():
 
         # Create input box for asking questions
         question = st.text_input("Ask a question")
+        button = st.button("Answer")
 
-        if session_state.answer_generated is False and question:
+        if session_state.answer_generated is False and button:
+            chat_history = []
+            result = session_state.qa({"question": question, "chat_history": chat_history})
+
+            answer = result['answer']
+            chat_history = [(question, result["answer"])]
+            # Display the answer
+            st.write("Answer:", answer)
+            session_state.answer = answer
+            session_state.answer_generated = True
+        elif button and question:
             chat_history = []
             result = session_state.qa({"question": question, "chat_history": chat_history})
 
@@ -86,7 +101,6 @@ def question_answering_app():
             st.write("Answer:", session_state.answer)
         else:
             st.write("")
-
         # Add a button for tip
         if session_state.answer_generated is True:
             if st.button("Tip 💡"):
@@ -96,3 +110,4 @@ def question_answering_app():
 
 if __name__ == "__main__":
     question_answering_app()
+
