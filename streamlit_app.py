@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 openai.api_key = os.getenv("OPENAI_KEY")
+cohere_api_key = os.getenv("COHERE_API_KEY")
 
 
 def process_long_text(long_text):
@@ -29,9 +30,9 @@ def process_long_text(long_text):
     texts = text_splitter.split_documents(documents)
 
     embeddings = CohereEmbeddings(
-        cohere_api_key='FoY9OqiB9Zpsm1siHOGOYHrgXn2ExUHwn9YVSmzk')
+        cohere_api_key=cohere_api_key)
     doc_search = Chroma.from_documents(texts, embeddings)
-    llm = Cohere(cohere_api_key='FoY9OqiB9Zpsm1siHOGOYHrgXn2ExUHwn9YVSmzk')
+    llm = Cohere(cohere_api_key=cohere_api_key)
     retriever = doc_search.as_retriever(search_kwargs={"k": 1})
     ConversationBufferMemory(memory_key="chat_history", return_messages=True)
     qa = ConversationalRetrievalChain.from_llm(llm, retriever)
