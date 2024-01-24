@@ -29,9 +29,9 @@ def process_long_text(long_text):
     texts = text_splitter.split_documents(documents)
 
     embeddings = CohereEmbeddings(
-        cohere_api_key='28siObhwnE4QUfTBUBxe0lCLrE4yCDBPu7hEWw8Y')
+        cohere_api_key='FoY9OqiB9Zpsm1siHOGOYHrgXn2ExUHwn9YVSmzk')
     doc_search = Chroma.from_documents(texts, embeddings)
-    llm = Cohere(cohere_api_key='28siObhwnE4QUfTBUBxe0lCLrE4yCDBPu7hEWw8Y')
+    llm = Cohere(cohere_api_key='FoY9OqiB9Zpsm1siHOGOYHrgXn2ExUHwn9YVSmzk')
     retriever = doc_search.as_retriever(search_kwargs={"k": 1})
     ConversationBufferMemory(memory_key="chat_history", return_messages=True)
     qa = ConversationalRetrievalChain.from_llm(llm, retriever)
